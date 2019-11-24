@@ -1,14 +1,20 @@
 package com.guitcube.pheonix.upsidedown.fluid;
 
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.state.StateContainer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 
 public abstract class InvertedWaterFluid extends ForgeFlowingFluid {
+
+	private boolean enableSourceCondense;
+	private boolean enableSourceFloat = true;
+	private int maxHeight = 120;
+	private int densityDir = 1;
 
 	public InvertedWaterFluid(Properties properties) {
 		super(properties);
@@ -16,25 +22,30 @@ public abstract class InvertedWaterFluid extends ForgeFlowingFluid {
 
 	@Override
 	public void tick(World worldIn, BlockPos pos, IFluidState state) {
-		/*
-		 * if (!state.isSource()) { IFluidState ifluidstate =
-		 * this.calculateCorrectFlowingState(worldIn, pos, worldIn.getBlockState(pos));
-		 * int i = this.func_215667_a(worldIn, pos, state, ifluidstate); if
-		 * (ifluidstate.isEmpty()) { state = ifluidstate; worldIn.setBlockState(pos,
-		 * Blocks.AIR.getDefaultState(), 3); } else if (!ifluidstate.equals(state)) {
-		 * state = ifluidstate; BlockState blockstate = ifluidstate.getBlockState();
-		 * worldIn.setBlockState(pos, blockstate, 2);
-		 * worldIn.getPendingFluidTicks().scheduleTick(pos, ifluidstate.getFluid(), i);
-		 * worldIn.notifyNeighborsOfStateChange(pos, blockstate.getBlock()); } }
-		 */
-		// this.flowAround(worldIn, pos, state);
+		int i = this.func_215667_a(worldIn, pos, state, state);
+		if (state.isSource()) {
+		//	if (worldIn.rand.nextInt(3) == 0) {
+//
+				if (shouldSourceBlockFloat(worldIn, pos)) {
+					worldIn.setBlockState(pos.add(0, densityDir, 0), this.getDefaultState().getBlockState(), 3);
+					worldIn.getPendingFluidTicks().scheduleTick(pos.add(0, densityDir, 0), state.getFluid(), i);
+					worldIn.notifyNeighborsOfStateChange(pos.add(0, densityDir, 0), state.getBlockState().getBlock());
+					return;
+		//		}
+			}
+		}
+
+		//worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
+
+		//this.flowAround(worldIn, pos, state);
 
 		System.out.println("IWF");
 	}
 
-	@Override
-	protected void flowAround(IWorld worldIn, BlockPos pos, IFluidState stateIn) {
-		System.out.println("FA");
+	private boolean shouldSourceBlockFloat(World world, BlockPos pos) {
+
+		BlockState state = world.getBlockState(pos.add(0, densityDir, 0));
+		return enableSourceFloat && (state != this.getBlockState(getDefaultState()));
 	}
 
 	public static class Flowing extends InvertedWaterFluid {
