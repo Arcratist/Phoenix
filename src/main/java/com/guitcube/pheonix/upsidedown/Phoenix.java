@@ -1,15 +1,15 @@
 package com.guitcube.pheonix.upsidedown;
 
 import com.guitcube.pheonix.core.gui.PhoenixScreen;
-import com.guitcube.pheonix.upsidedown.block.InvertedWaterBlock;
+import com.guitcube.pheonix.upsidedown.fluid.InvertedWaterFluid;
 import com.guitcube.pheonix.upsidedown.renderer.WeatherRenderer;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.fluid.FlowingFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
@@ -21,7 +21,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fluids.FluidAttributes;
-import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.client.config.GuiSlider;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -42,13 +41,13 @@ public class Phoenix {
 	public static final DeferredRegister<Item> ITEMS = new DeferredRegister<>(ForgeRegistries.ITEMS, MODID);
 	public static final DeferredRegister<Fluid> FLUIDS = new DeferredRegister<>(ForgeRegistries.FLUIDS, MODID);
 
-	public static RegistryObject<FlowingFluid> test_fluid = FLUIDS.register("test_fluid", () -> new ForgeFlowingFluid.Source(Phoenix.test_fluid_properties));
-	public static RegistryObject<FlowingFluid> test_fluid_flowing = FLUIDS.register("test_fluid_flowing", () -> new ForgeFlowingFluid.Flowing(Phoenix.test_fluid_properties));
+	public static RegistryObject<InvertedWaterFluid.Source> test_fluid = FLUIDS.register("test_fluid", () -> new InvertedWaterFluid.Source(Phoenix.test_fluid_properties));
+	public static RegistryObject<InvertedWaterFluid.Flowing> test_fluid_flowing = FLUIDS.register("test_fluid_flowing", () -> new InvertedWaterFluid.Flowing(Phoenix.test_fluid_properties));
 
-	public static RegistryObject<InvertedWaterBlock> test_fluid_block = BLOCKS.register("test_fluid_block", () -> new InvertedWaterBlock(test_fluid, Block.Properties.create(Material.WATER).doesNotBlockMovement().hardnessAndResistance(100.0F).noDrops()));
+	public static RegistryObject<FlowingFluidBlock> test_fluid_block = BLOCKS.register("test_fluid_block", () -> new FlowingFluidBlock(test_fluid, Block.Properties.create(Material.WATER).doesNotBlockMovement().hardnessAndResistance(100.0F).noDrops()));
 	public static RegistryObject<Item> inverted_water_bucket = ITEMS.register("inverted_water_bucket", () -> new BucketItem(test_fluid, new Item.Properties().containerItem(Items.BUCKET).maxStackSize(1).group(ItemGroup.MISC)));
 
-	public static final ForgeFlowingFluid.Properties test_fluid_properties = new ForgeFlowingFluid.Properties(test_fluid, test_fluid_flowing, FluidAttributes.builder(FLUID_STILL, FLUID_FLOWING).color(0xffff00ff)).bucket(inverted_water_bucket).block(test_fluid_block);
+	public static final InvertedWaterFluid.Properties test_fluid_properties = new InvertedWaterFluid.Properties(test_fluid, test_fluid_flowing, FluidAttributes.builder(FLUID_STILL, FLUID_FLOWING).color(0xffff00ff)).bucket(inverted_water_bucket).block(test_fluid_block);
 	KeyBinding openPhoenixGuiKeybind = new KeyBinding("key.openPhoenixGui", 80, "key.categories.phoenix");
 
 	WeatherRenderer wR = new WeatherRenderer();
